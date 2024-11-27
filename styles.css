@@ -1,0 +1,77 @@
+// Crear la configuración básica del juego
+const config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+let stadiumElements = [];
+let selectedElement = null;
+
+function preload() {
+    // Cargar imágenes de los elementos del estadio
+    this.load.image('stand', 'https://example.com/stand.png'); // Reemplaza con tu URL
+    this.load.image('goal', 'https://example.com/goal.png');
+    this.load.image('light', 'https://example.com/light.png');
+}
+
+function create() {
+    this.add.text(20, 20, 'Haz clic para agregar gradas, porterías y luces al estadio', { font: '16px Arial', fill: '#000' });
+
+    // Elemento interactivo de gradas
+    let standButton = this.add.text(20, 50, 'Agregar Gradas', { font: '18px Arial', fill: '#000' }).setInteractive();
+    standButton.on('pointerdown', () => { addElement(this, 'stand'); });
+
+    // Elemento interactivo de portería
+    let goalButton = this.add.text(20, 80, 'Agregar Portería', { font: '18px Arial', fill: '#000' }).setInteractive();
+    goalButton.on('pointerdown', () => { addElement(this, 'goal'); });
+
+    // Elemento interactivo de torre de luz
+    let lightButton = this.add.text(20, 110, 'Agregar Torre de Luz', { font: '18px Arial', fill: '#000' }).setInteractive();
+    lightButton.on('pointerdown', () => { addElement(this, 'light'); });
+}
+
+// Función para agregar un elemento al estadio
+function addElement(scene, type) {
+    let element;
+    if (type === 'stand') {
+        element = scene.add.image(Phaser.Math.Between(100, 700), Phaser.Math.Between(100, 500), 'stand').setInteractive();
+    } else if (type === 'goal') {
+        element = scene.add.image(Phaser.Math.Between(100, 700), Phaser.Math.Between(100, 500), 'goal').setInteractive();
+    } else if (type === 'light') {
+        element = scene.add.image(Phaser.Math.Between(100, 700), Phaser.Math.Between(100, 500), 'light').setInteractive();
+    }
+    
+    element.setOrigin(0.5, 0.5); // Centrar los elementos
+    element.setScale(0.5); // Ajustar el tamaño del elemento
+
+    // Hacer que el elemento sea arrastrable
+    element.on('pointerdown', function (pointer) {
+        selectedElement = element;
+    });
+
+    element.on('pointermove', function (pointer) {
+        if (selectedElement) {
+            selectedElement.x = pointer.x;
+            selectedElement.y = pointer.y;
+        }
+    });
+
+    element.on('pointerup', function () {
+        selectedElement = null;
+    });
+
+    stadiumElements.push(element); // Guardar el elemento en el array
+}
+
+function update() {
+    // Función que se ejecuta constantemente para actualizar la vista
+}
+
+// Iniciar el juego con la configuración
+const game = new Phaser.Game(config);
